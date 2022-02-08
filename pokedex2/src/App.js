@@ -1,15 +1,17 @@
 import './App.css';
+import React from 'react';
+import {Routes, Route, Switch} from "react-router-dom";
+import Pokedex from './components/Pokedex';
+
+
+
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>
-          Pokemon app 2.0
-        </h1>
-        
-      </header>
-    </div>
+    <Routes>
+        <Route exact path="/" element={<Pokedex />}/>
+        </Routes>
   );
 }
 
