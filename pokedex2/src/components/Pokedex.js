@@ -1,12 +1,14 @@
-import react from "react";
-import {Paper, Container, Typography} from '@mui/material'
+import React, {useState} from "react";
+import {Container, Typography, Grid, Card, CardContent, CardMedia, CircularProgress} from '@mui/material'
+import {makeStyles} from '@mui/styles'
 import Image from '../pokeBackground2.png'
-import { Box, color, flexbox, maxHeight, sizing } from "@mui/system";
+import { Box } from "@mui/system";
+import mockData from "./mockData";
 
 
 
 
-const styles = {
+const useStyles = makeStyles({
     siteContainer: {
         marginTop:'5%',
         marginBottom:'5%',
@@ -26,36 +28,100 @@ const styles = {
     },
     dexBox:{
         border: "2px solid black",
-        height:'80vh',
+        padding:30,
+        maxHeight:'80vh',
+        overflow: 'auto',
+        width:'70%',
         flexGrow:1,
         margin:5,
   },
     pokemonBox:{
         border: "2px solid pink",
         height:'80vh',
-        width:'40%',
+        width:'30%',
         margin:5,
+    },
+    
+    cardMedia:{
+        margin:'auto'
+        
+
+    },
+    pokeName:{
+        textAlign: 'center',
+        
+        
+    },
+    cardBox:{
+        height:'350',
+        width:'350',
+        position:'fixed',
+        backgroundColor:'pink',
+        textAlign: 'center',
+        
+        
+        
+    },
+    card:{
+        height:120,
+        width:120,
     }
-};
-
-
-
+});
 
 
 
 
 const Pokedex=()=>{
+    const classes = useStyles();
+    const [pokeData, SetPokeData]=useState(mockData)
+    const capitalizeFirst = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+
+
+    const getCard=(pokemonId)=>{
+        console.log(pokeData[`${pokemonId}`])
+        const {id, name}=pokeData[`${pokemonId}`]
+        console.log(id)
+        const sprite=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+        return(
+            <Grid item xs={6} sm={3} md={3} lg={2} xl={2} key={pokemonId}>
+                <Box className={classes.cardBox}>
+                <Card className={classes.card}>
+                <CardMedia className={classes.cardMedia} image={sprite}
+                style={{width:'100px', height:'100px'}}/>
+                {/* <CardContent className={classes.cardMedia}>{name}</CardContent> */}
+                </Card>
+                <Typography className={classes.pokeName}>{`${capitalizeFirst(name)}`}</Typography>
+                </Box>
+            </Grid>
+    
+    
+        )
+    }
+
+
+
+
     return(
-        <Container style={styles.siteContainer}>
-        <Box style={styles.dexContainer}>
-            <Box style={styles.dexBox}>
-                <Typography>Hi From box1</Typography>
+        <React.Fragment>
+        <Container className={classes.siteContainer}>
+        <Box className={classes.dexContainer}>
+            <Box className={classes.dexBox}>
+                {pokeData ? (
+                <Grid container spacing={2}>
+                    {Object.keys(pokeData).map((pokemonId) => getCard(pokemonId))}
+                    
+                </Grid>) : <CircularProgress/>}
+                
             </Box>
-            <Box style={styles.pokemonBox}>
-                <Typography>Hi From box2</Typography>
+
+
+
+            <Box className={classes.pokemonBox}>
+                <Typography>Hi From Pokemon Data Box</Typography>
             </Box>
         </Box>
         </Container>
+        </React.Fragment>
     )
 }
 

@@ -19,3 +19,4 @@ code {
 .bg-image {
   filter: blur(3px);
 }
+.MuiCard-root{ border-radius: 50%  !important;}
