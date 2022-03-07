@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from "react";
-import {Container, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, ThemeProvider,AppBar, Toolbar,TextField, Button} from '@mui/material'
+import {Container, Typography, Grid, Card, CardMedia, CircularProgress, ThemeProvider,AppBar, Toolbar,TextField} from '@mui/material'
+import { getImageId } from "./Helpers";
 import { useStyles } from "./Style";
-import {makeStyles,} from '@mui/styles'
-import Image from '../pokeBackground2.png'
 import pokeLogo from '../pokeLogo.png'
 import { Box } from "@mui/system";
-import mockData from "./mockData";
 import axios from "axios";
 
 
@@ -13,104 +11,136 @@ import axios from "axios";
 const Pokedex=()=>{
     const classes = useStyles();
     const [pokeData, SetPokeData]=useState({});
-    const [newData, SetNewData]=useState({});
+    const [pokeDetails, setPokeDetails]=useState(null);
     const [filter, setFilter]=useState("");
-    // const [type, setType]=useState(new Array(types.length).fill(false));
+    // const [checked, setIsChecked] = useState([]);
+
+// ----------------------Test 2----------
 
 
+useEffect(()=>{
+  const newObj={}
+const getTheData = async()=>{
+  const response = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=898`)
+  const details= await Promise.all(response.data.results.map((pokemon)=>{
+    
+     return axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
+    
+}))
+console.log(details)
+      details.forEach((poke,index)=>{
+//Set Pokemon Type Details to an array with the type details
+        const nameType=poke.data.types.map((item)=>{
+          const {type}=item
+          const {name}=type
+          return name
+        })
 
-// -------Function to get pokedex data from the Poke API------------
+        //Set Pokemon ability Details to an array with the ability details
+        const nameAbility=poke.data.abilities.map((item)=>{
+          const {ability}=item
+          const {name}=ability
+          return name
+        })
 
-
-    useEffect(()=>{
-        axios.get(`https://pokeapi.co/api/v2/pokemon?limit=3`)
-        .then(function(response){
-            const {data} = response;
-            const {results}=data;
-            // console.log({data})
-            const pokeObj={};
-          results.forEach((pokemon,index)=>{
-              pokeObj[index +1]={
-                  id: index+1,
-                  name: pokemon.name,
-                  sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`
-
-              };
-          });
-          // console.log("this is the",pokeObj[2])
-          SetPokeData(pokeObj) 
+        //Set Pokemon move Details to an array with the move details
+        const nameMoves=poke.data.moves.map((item)=>{
+          const {move}=item
+          const {name}=move
+          return name
         })
 
 
-          
-        
+        //Set Pokemon base stat details to an array of objects each object being a key value pair of the status name and the matching value
+        const statData=poke.data.stats.map((item)=>{
+          const statsObj={}
+          const {stat}=item
+          const {name}=stat
+          const statusName=String(name)
+          const {base_stat}=item
+
+            statsObj[statusName]=base_stat
+            return statsObj  
+          })
+
+
+          const gameIntro=poke.data.game_indices.slice(0,3).map((item)=>{
+            const{version}=item
+            const{name}=version
+            return name
+          })
 
 
 
 
 
+//Create Pokemon Object with all of the Pokemon Details. Deconstructed set that object to the state pokeData
+        newObj[index+1]={
+          id: [index+1],
+          name:poke.data.name,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
+          types:nameType,
+          height:poke.data.height,
+          weight:poke.data.weight,
+          abilities:nameAbility,
+          moves:nameMoves,
+          stats:statData,
+          gen:gameIntro
+        }
+        return newObj;
+      })
+SetPokeData(newObj)
+}
+getTheData();
+console.log("maybe the",newObj)
+
+},[])
 
 
-    },[])
+console.log("definitely",pokeData)
 
 
 
 
+//--------------------Test 2------------
 
-
-
-
-
-
-
-// Work In Progress!!!!!!! iterates through all pokemon in pokeobj to grab their values 
-// useEffect(()=>{
-//   const newPokeObj={};
-//     Object.keys(pokeData).map((pokemonId) =>{
-//       // console.log('id is', pokemonId)
-//       const fetchData = async () => {
-        
-     
-
-
-
-//      await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
-//       .then(function(response){
-//         const {data} = response;
-//         newPokeObj[data.order]={
-//           id: data.order,
-//           name:data.name,
-//           sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.order}.png`,
-//         }
-//         console.log('sorry',{newPokeObj})
-
-//     })
-//     SetNewData(newPokeObj)
-//   }
-//   fetchData();
-//   })
-
-// }, []);
-
-console.log("hopefully",newData)
-
-
-  console.log(Object.keys(pokeData))
-console.log('function is over')
-
-// Work In Progress!!!!!!!
+const renderDetails=(value)=>{
   
+  console.log("Hi I am a detail")
+  const detail=pokeData[value]
+  const { name, id, height, weight, types, abilities,gen,moves} = detail
+  const newId= getImageId(detail.id);
+  const fullImageUrl = `https://www.serebii.net/swordshield/pokemon/${newId}.png`;
+  const fullShinyUrl = `https://www.serebii.net/Shiny/SWSH/${newId}.png`;
 
-// ---------------Function to Set checkbox Filters--------------------
+  return (
+    <React.Fragment>
+    <Box maxHeight='80vh' className={classes.pokemonBox}>
+    <Typography variant="h3">Pokemon Info</Typography>
+            <Box className={classes.pokeImg}>
+              <img style={{ width: "150px", height: "150px" }} src={fullImageUrl} alt="Standard Sprite" />
+              <img style={{ width: "150px", height: "150px" }} src={fullShinyUrl} alt="Shiny Sprite"/>
+            </Box>
+            <Box className={classes.pokeInfo}>
+              <Typography fontSize="20px" component={'div'}> Name: {capitalizeFirst(name)}</Typography>
+              <Typography fontSize="20px"> Id: {id}</Typography>
+              <Typography fontSize="20px">Height: {height} </Typography>
+              <Typography fontSize="20px">Weight: {weight} </Typography>
+              <Typography fontSize="20px">Types: {capitalizeFirst(types.join(', '))}</Typography>
+              <Typography fontSize="20px">Abilities: {capitalizeFirst(abilities.join(', '))}</Typography>
+            </Box>
+                
+    </Box>
+    </React.Fragment>
+  );
+
+}
 
 
 
 // -------------------Get Pokemon Details---------------
 
 
-const tryThis=newData;
-
-console.log('welp',tryThis)
 
 
 // ------Search Bar filter----------------------------
@@ -118,6 +148,10 @@ console.log('welp',tryThis)
     const handleSearch=(event)=>{
         setFilter(lowerFirst(event.target.value))
     }
+
+
+
+
 
 
 //--------Change Casing Functions---------------------
@@ -130,21 +164,18 @@ console.log('welp',tryThis)
 
 
     const getCard=(pokemonId)=>{
-        console.log("from get card",pokeData[`${pokemonId}`])
+        // console.log("from get card",pokeData[`${pokemonId}`])
         const {id, name, sprite}=pokeData[pokemonId]
         return(
             <Grid item xs={6} sm={3} md={3} lg={2} xl={2} key={pokemonId} className={classes.grid}>
                 <Box maxWidth={150} className={classes.cardBox}>
-                <Card className={classes.card}>
+                <Card className={classes.card} onClick={(()=>setPokeDetails(renderDetails(pokemonId)))}>
                 <CardMedia className={classes.cardMedia} image={sprite}
                 style={{width:'100px', height:'100px'}}/>
-                {/* <CardContent className={classes.cardMedia}>{name}</CardContent> */}
                 </Card>
                 <Typography className={classes.pokeName}>{`${capitalizeFirst(name)}`}</Typography>
                 </Box>
             </Grid>
-    
-    
         )
     }
 
@@ -167,148 +198,166 @@ console.log('welp',tryThis)
 
                 <TextField id="outlined-basic" label="Search Pokemon" variant="outlined" onChange={handleSearch}/>
 
-{/* ---------------Function to Set checkbox Filters--------------------  */}
+
+
+
+{/* 
+// ---------------Function to Set checkbox Filters-------------------- */}
+
 <Box className={classes.filterContainer}>
 <Typography style={{ textAlign:'center' }}>Filter By Type</Typography>
 <Box width='500px'height='60px'className={classes.formBox}>
-<Box width='350px' height='55px' className={classes.form}>
-<form>
+{/* <Box width='350px' height='55px' className={classes.form}> */}
+<div>
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Normal"
+          value="normal"
+          
         />
         Normal
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Fighting"
+          value="fighting"
         />
         Fighting
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Flying"
+          value="flying"
         />
         Flying
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Poison"
+          value="poison"
         />
         Poison
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Ground"
+          value="ground"
         />
         Ground
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Rock"
+          value="rock"
         />
         Rock
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Bug"
+          value="bug"
         />
         Bug
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Ghost"
+          value="ghost"
         />
         Ghost
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Steel"
+          value="steel"
         />
         Steel
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Fire"
+          value="fire"
         />
         Fire
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Water"
+          value="water"
         />
         Water
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Grass"
+          value="grass"
         />
         Grass
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Electric"
+          value="electric"
         />
         Electric
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Ground"
+          value="ground"
         />
         Psychic
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Ice"
+          value="ice"
         />
         Ice
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Dragon"
+          value="dragon"
         />
         Dragon
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Dark"
+          value="dark"
         />
         Dark
         <input
           type="checkbox"
           id="type"
           name="type"
-          value="Fairy"
+          value="fairy"
         />
         Fairy
-</form> 
+        <input
+          type="checkbox"
+          id="type"
+          name="type"
+          value="unknown"
+        />
+        Unknown
+        <input
+          type="checkbox"
+          id="type"
+          name="type"
+          value="shadow"
+        />
+        Shadow
+</div> 
 </Box>
-<Button>Apply</Button>
-<Button>Clear</Button>
 
-</Box>
+{/* </Box> */}
 </Box>
 
 
-
+{/* ---------------Function to Set checkbox Filters--------------------  */}
 
                 </Toolbar>
             </AppBar>
@@ -329,10 +378,12 @@ console.log('welp',tryThis)
             </Box>
 
 {/* -----------------------Pokemon Details Container--------------------- */}
+            
+            {/* <Box maxHeight='80vh' className={classes.pokemonBox}> */}
+                <React.Fragment>{pokeDetails}</React.Fragment>
+            {/* </Box>
+          */}
 
-            <Box maxHeight='80vh' className={classes.pokemonBox}>
-                <Typography>Hi From Pokemon Data Box</Typography>
-            </Box>
         </Box>
         </Container>
         </React.Fragment>

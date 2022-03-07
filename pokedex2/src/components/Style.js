@@ -35,14 +35,12 @@ export const useStyles = makeStyles({
         margin:5
 
     },
-    form:{
+   
+    formBox:{
+        // Border:"2px solid black",
+        // display:'flex',
         overflow:'auto',
         marginLeft:20,
-
-    },
-    formBox:{
-        Border:"2px solid black",
-        display:'flex'
 
     },
     dexContainer:{
@@ -62,10 +60,34 @@ export const useStyles = makeStyles({
         margin:5,
   },
     pokemonBox:{
-        border: "2px solid pink",
+        backgroundColor:'rgba(255,255,255, 0.5 )',
+        
+        border: "5px solid Black",
         // height:'80vh',
-        width:'30%',
+        width:'50%',
         margin:5,
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'center'
+    
+    },
+    pokeImg:{
+        margin:10,
+        display:'flex',
+        justifyContent:'space-evenly'
+
+    },
+    pokeInfo:{
+        
+        margin:10,
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'flex-start',
+        fontSize:'15px',
+    },
+    pokeText:{
+        htmlfontSize:'15rem',
+
     },
     grid:{
         // marginBottom:30,
