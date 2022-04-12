@@ -13,7 +13,8 @@ const Pokedex=()=>{
     const [pokeData, SetPokeData]=useState({});
     const [pokeDetails, setPokeDetails]=useState(null);
     const [filter, setFilter]=useState("");
-    // const [checked, setIsChecked] = useState([]);
+    const [typeFilter,setTypeFilter]=([]);
+    const [isChecked, setIsChecked] = useState({normal:false, fighting:false,flying:false,poison:false,ground:false, rock:false,bug:false, ghost:false, steel:false, fire:false, water:false, grass:false, electric:false, physic:false, ice:false,dragon:false, dark:false,fairy:false, unknown:false, shadow:false});
 
 // ----------------------Test 2----------
 
@@ -144,10 +145,76 @@ const renderDetails=(value)=>{
 
 
 // ------Search Bar filter----------------------------
-
     const handleSearch=(event)=>{
         setFilter(lowerFirst(event.target.value))
     }
+
+    const handleCheck=(event)=>{
+      const typeObj={}
+      const {value,checked}=event.target
+      console.log(value, checked)
+      isChecked[value]=checked
+      // if (isChecked[value]===true){
+      //   typeArr.push(value)
+      // return typeArr
+      // }
+      console.log("value of", isChecked)
+
+      Object.keys(isChecked).map((key)=>{
+        if (isChecked[key]===true){
+          typeObj[key]=true
+        }
+        console.log(typeObj)
+        return typeObj
+        
+      })
+      // setIsChecked(typeArr)
+      console.log("Final Check",typeObj)
+
+      setIsChecked(typeObj)
+      
+
+      
+    }
+
+    console.log("returning", isChecked)
+
+
+
+  const evalTypes=(typeDataArr)=>{
+    const checkedStat= Object.keys(isChecked)
+    console.log(checkedStat)
+    let match=false;
+    if (checkedStat.length>=1){
+
+    
+    for(let i=0; i<checkedStat.length;i++){
+      typeDataArr.map((item)=>{
+        if(item===checkedStat[i]){
+          console.log(item)
+          console.log(checkedStat[i])
+          return match=true
+        }
+        
+      })
+
+    }}
+    else{
+      return match=true
+    }
+  
+  
+
+ console.log("well",typeDataArr,match)
+ return match
+
+  }
+
+//  console.log(pokeData[1].types)
+//  console.log("evaluate",evalTypes(pokeData[1].types))
+    
+
+  
 
 
 
@@ -165,7 +232,7 @@ const renderDetails=(value)=>{
 
     const getCard=(pokemonId)=>{
         // console.log("from get card",pokeData[`${pokemonId}`])
-        const {id, name, sprite}=pokeData[pokemonId]
+        const {types, name, sprite}=pokeData[pokemonId]
         return(
             <Grid item xs={6} sm={3} md={3} lg={2} xl={2} key={pokemonId} className={classes.grid}>
                 <Box maxWidth={150} className={classes.cardBox}>
@@ -214,6 +281,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="normal"
+          onChange={handleCheck}
           
         />
         Normal
@@ -222,6 +290,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="fighting"
+          onChange={handleCheck}
         />
         Fighting
         <input
@@ -229,6 +298,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="flying"
+          onChange={handleCheck}
         />
         Flying
         <input
@@ -236,6 +306,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="poison"
+          onChange={handleCheck}
         />
         Poison
         <input
@@ -243,6 +314,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="ground"
+          onChange={handleCheck}
         />
         Ground
         <input
@@ -250,6 +322,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="rock"
+          onChange={handleCheck}
         />
         Rock
         <input
@@ -257,6 +330,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="bug"
+          onChange={handleCheck}
         />
         Bug
         <input
@@ -264,6 +338,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="ghost"
+          onChange={handleCheck}
         />
         Ghost
         <input
@@ -271,6 +346,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="steel"
+          onChange={handleCheck}
         />
         Steel
         <input
@@ -278,6 +354,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="fire"
+          onChange={handleCheck}
         />
         Fire
         <input
@@ -285,6 +362,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="water"
+          onChange={handleCheck}
         />
         Water
         <input
@@ -292,6 +370,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="grass"
+          onChange={handleCheck}
         />
         Grass
         <input
@@ -299,6 +378,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="electric"
+          onChange={handleCheck}
         />
         Electric
         <input
@@ -306,6 +386,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="ground"
+          onChange={handleCheck}
         />
         Psychic
         <input
@@ -313,6 +394,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="ice"
+          onChange={handleCheck}
         />
         Ice
         <input
@@ -320,6 +402,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="dragon"
+          onChange={handleCheck}
         />
         Dragon
         <input
@@ -327,6 +410,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="dark"
+          onChange={handleCheck}
         />
         Dark
         <input
@@ -334,6 +418,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="fairy"
+          onChange={handleCheck}
         />
         Fairy
         <input
@@ -341,6 +426,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="unknown"
+          onChange={handleCheck}
         />
         Unknown
         <input
@@ -348,6 +434,7 @@ const renderDetails=(value)=>{
           id="type"
           name="type"
           value="shadow"
+          onChange={handleCheck}
         />
         Shadow
 </div> 
@@ -370,7 +457,7 @@ const renderDetails=(value)=>{
                 {pokeData ? (
                 <Grid container spacing={2}>
                     {Object.keys(pokeData).map((pokemonId) => 
-                    pokeData[pokemonId].name.includes(filter) &&
+                    pokeData[pokemonId].name.includes(filter) && evalTypes(pokeData[pokemonId].types)===true  &&
                     getCard(pokemonId))}
                     
                 </Grid>) : <CircularProgress/>}
